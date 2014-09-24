@@ -16,6 +16,7 @@
 #include <stdlib.h> // abort
 #include <string.h> // memcpy
 #include <math.h> // floor
+#include <algorithm> //Added for std::max
 
 namespace gdcm
 {
