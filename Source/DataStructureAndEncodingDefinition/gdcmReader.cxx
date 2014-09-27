@@ -43,6 +43,7 @@ Reader::~Reader()
     delete Ifstream;
     Ifstream = NULL;
     Stream = NULL;
+	delete [] buffer;
     }
 }
 
@@ -994,12 +995,15 @@ bool Reader::CanRead() const
 void Reader::SetFileName(const char *filename)
 {
   if(Ifstream) delete Ifstream;
+  if (buffer) delete [] buffer;
   Ifstream = new std::ifstream();
   Ifstream->open(filename, std::ios::binary);
   if( Ifstream->is_open() )
     {
     Stream = Ifstream;
     assert( Stream && *Stream );
+	buffer = new char[bufferSize];
+	Ifstream->rdbuf()->pubsetbuf(buffer,bufferSize);
     }
   else
     {

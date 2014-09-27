@@ -56,6 +56,10 @@ public:
   Reader():F(new File){
     Stream = NULL;
     Ifstream = NULL;
+	buffer = nullptr;
+	//bufferSize = 1024 * 1024 * 0.5;
+
+	bufferSize = 128 * 1024;
   }
   virtual ~Reader();
 
@@ -94,6 +98,10 @@ public:
   /// \warning need to call either SetFileName or SetStream first
   bool CanRead() const;
 
+  void	setBufferSize(size_t nSize) {
+	  bufferSize = nSize;
+  }
+
 protected:
   bool ReadPreamble();
   bool ReadMetaInformation();
@@ -119,6 +127,8 @@ private:
   TransferSyntax GuessTransferSyntax();
   std::istream *Stream;
   std::ifstream *Ifstream;
+  char*		buffer;
+  size_t	bufferSize;
 };
 
 /**
