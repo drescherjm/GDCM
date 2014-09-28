@@ -57,8 +57,6 @@ public:
     Stream = NULL;
     Ifstream = NULL;
 	buffer = nullptr;
-	//bufferSize = 1024 * 1024 * 0.5;
-
 	bufferSize = 128 * 1024;
   }
   virtual ~Reader();

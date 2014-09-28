@@ -32,7 +32,7 @@
 namespace gdcm
 {
 
-Writer::Writer():Stream(NULL),Ofstream(NULL),F(new File),CheckFileMetaInformation(true),WriteDataSetOnly(false)
+Writer::Writer():Stream(NULL),Ofstream(NULL),F(new File),CheckFileMetaInformation(true),WriteDataSetOnly(false),buffer(nullptr),bufferSize( 128 * 1024 )
 {
 }
 
@@ -43,6 +43,7 @@ Writer::~Writer()
     delete Ofstream;
     Ofstream = NULL;
     Stream = NULL;
+	delete [] buffer;
     }
 }
 
@@ -169,10 +170,16 @@ void Writer::SetFileName(const char *filename)
     if (Ofstream && Ofstream->is_open())
       {
       Ofstream->close();
+	  delete [] buffer;
+	  buffer = nullptr;
       delete Ofstream;
       }
     Ofstream = new std::ofstream();
     Ofstream->open(filename, std::ios::out | std::ios::binary );
+
+	buffer = new char[bufferSize];
+	Ofstream->rdbuf()->pubsetbuf(buffer,bufferSize);
+
     assert( Ofstream->is_open() );
     assert( !Ofstream->fail() );
     //std::cerr << Stream.is_open() << std::endl;

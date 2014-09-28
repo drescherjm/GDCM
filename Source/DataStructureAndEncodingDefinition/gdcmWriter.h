@@ -71,6 +71,10 @@ public:
   void CheckFileMetaInformationOff() { CheckFileMetaInformation = false; }
   void CheckFileMetaInformationOn() { CheckFileMetaInformation = true; }
 
+  void	setBufferSize(size_t nSize) {
+	  bufferSize = nSize;
+  }
+
 protected:
   void SetWriteDataSetOnly(bool b) { WriteDataSetOnly = b; }
 
@@ -89,6 +93,8 @@ private:
   SmartPointer<File> F;
   bool CheckFileMetaInformation;
   bool WriteDataSetOnly;
+  char*		buffer;
+  size_t	bufferSize;
 };
 
 } // end namespace gdcm
