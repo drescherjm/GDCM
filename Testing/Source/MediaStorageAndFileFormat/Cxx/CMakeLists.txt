@@ -3,6 +3,9 @@
 set(MSFF_TEST_SRCS
   TestAnonymizer
   TestFileChangeTransferSyntax1
+  TestFileChangeTransferSyntax2
+  TestFileChangeTransferSyntax3
+  TestFileChangeTransferSyntax4
   TestFileStreamer1
   TestFileStreamer2
   TestFileStreamer3
@@ -12,6 +15,7 @@ set(MSFF_TEST_SRCS
   TestFileAnonymizer1
   TestFileAnonymizer2
   TestFileAnonymizer3
+  TestFileAnonymizer4
   TestIconImageFilter
   TestIconImageGenerator
   TestIconImageGenerator2
@@ -50,12 +54,14 @@ set(MSFF_TEST_SRCS
   TestDumper
   TestDictPrinter
   TestApplicationEntity
-  TestStringFilter
+  TestStringFilter1
+  TestStringFilter2
+  TestStringFilter3
   TestUIDGenerator
   TestUUIDGenerator
   #TestUIDGenerator3
   TestXMLPrinter
-  TestPrinter
+  TestPrinter1
   TestPrint
   TestSorter
   TestImageReader
@@ -96,7 +102,8 @@ set(MSFF_TEST_SRCS
 if(GDCM_DATA_ROOT)
   set(MSFF_TEST_SRCS
     ${MSFF_TEST_SRCS}
-    TestScanner
+    TestScanner1
+    TestScanner2
     TestPrinter2
     TestIPPSorter
     TestIPPSorter2

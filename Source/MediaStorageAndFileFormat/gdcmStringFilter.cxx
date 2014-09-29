@@ -43,6 +43,11 @@ std::string StringFilter::ToString(const Tag& t) const
   return ToStringPair(t).second;
 }
 
+std::string StringFilter::ToString(const DataElement& de) const
+{
+  return ToStringPair(de).second;
+}
+
 /*
 std::string StringFilter::ToMIME64(const Tag& t) const
 {
@@ -86,6 +91,21 @@ std::pair<std::string, std::string> StringFilter::ToStringPair(const Tag& t) con
     {
     const DataSet &ds = GetFile().GetDataSet();
     return ToStringPair(t, ds);
+    }
+}
+
+std::pair<std::string, std::string> StringFilter::ToStringPair(const DataElement& de) const
+{
+  const Tag & t = de.GetTag();
+  if( t.GetGroup() == 0x2 )
+    {
+    const FileMetaInformation &header = GetFile().GetHeader();
+    return ToStringPairInternal(de, header);
+    }
+  else
+    {
+    const DataSet &ds = GetFile().GetDataSet();
+    return ToStringPairInternal(de, ds);
     }
 }
 
@@ -313,17 +333,30 @@ bool StringFilter::ExecuteQuery(std::string const & query_const,
 std::pair<std::string, std::string> StringFilter::ToStringPair(const Tag& t, DataSet const &ds) const
 {
   std::pair<std::string, std::string> ret;
+  if( !ds.FindDataElement(t) )
+    {
+    gdcmDebugMacro( "DataSet does not contains tag:" );
+    return ret;
+    }
+  const DataElement &de = ds.GetDataElement( t );
+  ret = ToStringPairInternal( de, ds );
+  return ret;
+}
+
+std::pair<std::string, std::string> StringFilter::ToStringPairInternal(const DataElement& de, DataSet const &ds) const
+{
+  std::pair<std::string, std::string> ret;
   const Global &g = GlobalInstance;
   const Dicts &dicts = g.GetDicts();
-  if( ds.IsEmpty() || !ds.FindDataElement(t) )
+  if( ds.IsEmpty() )
     {
     gdcmDebugMacro( "DataSet is empty or does not contains tag:" );
     return ret;
     }
-  const DataElement &de = ds.GetDataElement( t );
   //assert( de.GetTag().IsPublic() );
   std::string strowner;
   const char *owner = 0;
+  const Tag &t = de.GetTag();
   if( t.IsPrivate() && !t.IsPrivateCreator() )
     {
     strowner = ds.GetPrivateCreator(t);
@@ -436,6 +469,7 @@ std::pair<std::string, std::string> StringFilter::ToStringPair(const Tag& t, Dat
   return ret;
 }
 
+#if !defined(GDCM_LEGACY_REMOVE)
 std::string StringFilter::FromString(const Tag&t, const char * value, VL const & vl)
 {
   (void)t;
@@ -444,6 +478,7 @@ std::string StringFilter::FromString(const Tag&t, const char * value, VL const &
   assert(0 && "TODO");
   return "";
 }
+#endif
 
 #define FromStringFilterCase(type) \
   case VR::type: \
@@ -452,13 +487,17 @@ std::string StringFilter::FromString(const Tag&t, const char * value, VL const &
       /* el.ReadComputeLength( is ); */ \
       el.SetLength( vl );  \
        for(unsigned int i = 0; i < vm.GetLength(); ++i)  \
+        { \
+        if(i) is.get(); \
         is >> el.GetValue(i);  \
+        } \
       el.Write(os); \
       } \
     break
 
-size_t count_backslash(const char *s, size_t len)
+static inline size_t count_backslash(const char *s, size_t len)
 {
+  assert( s );
   size_t c = 0;
   for(size_t i = 0; i < len; ++i, ++s)
     {
@@ -534,11 +573,6 @@ std::string StringFilter::FromString(const Tag&t, const char * value, size_t len
 #endif
     }
 
-  //if( vl != vm.GetLength() * vr.GetSizeof() )
-  //  {
-  //  assert(0);
-  //  }
-
   std::istringstream is;
   is.str( s );
   std::ostringstream os;
@@ -556,7 +590,6 @@ std::string StringFilter::FromString(const Tag&t, const char * value, size_t len
     FromStringFilterCase(UL);
     //FromStringFilterCase(UN);
     FromStringFilterCase(US);
-    FromStringFilterCase(UT);
   default:
     gdcmErrorMacro( "Not implemented" );
     assert(0);
@@ -564,4 +597,4 @@ std::string StringFilter::FromString(const Tag&t, const char * value, size_t len
   return os.str();
 }
 
-}
+} // end namespace gdcm

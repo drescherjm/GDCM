@@ -51,7 +51,7 @@ public:
   /// GDCM 1.x compatibility issue:
   /// when using ReWrite an MR Image Storage would be rewritten with a Rescale Slope/Intercept
   /// while the standard would prohibit this (Philips Medical System is still doing that)
-  /// Unless explicitely set elsewhere by the standard, it will use value from 0028,1052 / 0028,1053
+  /// Unless explicitly set elsewhere by the standard, it will use value from 0028,1052 / 0028,1053
   /// for the Rescale Slope & Rescale Intercept values
   static void SetForceRescaleInterceptSlope(bool);
   static bool GetForceRescaleInterceptSlope();
@@ -60,7 +60,7 @@ public:
   /// When using ReWrite an MR Image Storage would be rewritten as Secondary Capture Object while
   /// still having a Pixel Spacing tag (0028,0030). If you have deal with those files, use this
   /// very special flag to handle them
-  /// Unless explicitely set elsewhere by the standard, it will use value from 0028,0030 / 0018,0088
+  /// Unless explicitly set elsewhere by the standard, it will use value from 0028,0030 / 0018,0088
   /// for the Pixel Spacing of the Image
   static void SetForcePixelSpacing(bool);
   static bool GetForcePixelSpacing();
@@ -118,6 +118,11 @@ public:
 
   ///Moved from PixampReader to here.  Generally used for photometric interpretation.
   static const ByteValue* GetPointerFromElement(Tag const &tag, File const& f);
+
+  /// Moved from MediaStorage here, since we need extra info stored in PixelFormat & PhotometricInterpretation
+  static MediaStorage ComputeMediaStorageFromModality(const char *modality,
+    unsigned int dimension = 2, PixelFormat const & pf = PixelFormat(),
+    PhotometricInterpretation const & pi = PhotometricInterpretation(), double rescaleintercept = 0, double rescaleslope = 1 );
 
 protected:
   static Tag GetSpacingTagFromMediaStorage(MediaStorage const &ms);

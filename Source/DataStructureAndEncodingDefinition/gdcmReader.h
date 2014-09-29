@@ -96,9 +96,18 @@ public:
   /// \warning need to call either SetFileName or SetStream first
   bool CanRead() const;
 
+
   void	setBufferSize(size_t nSize) {
 	  bufferSize = nSize;
   }
+
+  /// Set/Get DataSet StreamPosition ;
+  std::streampos GetDSStreamPosition() { return m_posDataSet ; }
+
+  /// For wrapped language. return type is compatible with System::FileSize return type
+  /// Use native std::streampos / std::streamoff directly from the stream from C++
+  size_t GetStreamCurrentPosition() const;
+
 
 protected:
   bool ReadPreamble();
@@ -119,12 +128,13 @@ protected:
   //will still have to be subject to endianness swaps, if necessary.
   std::istream* GetStreamPtr() const { return Stream; }
 
-private:
+protected:
   template <typename T_Caller>
   bool InternalReadCommon(const T_Caller &caller);
   TransferSyntax GuessTransferSyntax();
   std::istream *Stream;
   std::ifstream *Ifstream;
+  std::streampos m_posDataSet ;
   char*		buffer;
   size_t	bufferSize;
 };
