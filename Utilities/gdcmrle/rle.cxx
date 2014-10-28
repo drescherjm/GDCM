@@ -19,6 +19,7 @@
 #include <cstring> // memcpy
 #include <cassert>
 #include <stdint.h> // uint32_t
+#include <algorithm> // std::min
 
 namespace rle
 {
