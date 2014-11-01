@@ -18,6 +18,8 @@
 #include "gdcmDataSet.h"
 #include "gdcmFileMetaInformation.h"
 
+#define GDCM_HAS_LARGE_IO_BUFFER
+
 namespace gdcm
 {
 
