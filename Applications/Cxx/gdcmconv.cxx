@@ -88,6 +88,7 @@
 #include "gdcmJPEGCodec.h"
 #include "gdcmJPEGLSCodec.h"
 #include "gdcmSequenceOfFragments.h"
+#include <gdcmVR.h>
 
 #include <string>
 #include <iostream>
@@ -1047,6 +1048,7 @@ int main (int argc, char *argv[])
     gdcm::ImageChangePhotometricInterpretation pifilt;
     pifilt.SetInput( image );
     pifilt.SetPhotometricInterpretation( pi );
+
     bool b = pifilt.Change();
     if( !b )
       {
@@ -1056,7 +1058,24 @@ int main (int argc, char *argv[])
     gdcm::PixmapWriter writer;
     writer.SetFileName( outfilename.c_str() );
     writer.SetFile( reader.GetFile() );
-    writer.SetPixmap( pifilt.PixmapToPixmapFilter::GetOutput() );
+	
+	writer.SetPixmap( pifilt.PixmapToPixmapFilter::GetOutput() );
+	
+	gdcm::File & file = writer.GetFile();
+	gdcm::FileMetaInformation &fmi = file.GetHeader();
+
+	gdcm::DataSet & ds = file.GetDataSet();
+
+	gdcm::DataElement de;
+
+	de.SetTag(gdcm::Tag(0x2050, 0x0020));
+	de.SetVR(gdcm::VR::CS);
+	de.SetByteValue("IDENTITY",8);
+
+	ds.Replace(de);
+
+	//fmi.Remove(gdcm::Tag(0x2050, 0x0020));
+	    
     if( !writer.Write() )
       {
       std::cerr << "Failed to write: " << outfilename << std::endl;
